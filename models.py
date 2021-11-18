@@ -9,11 +9,12 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
     user_id=db.Column(db.String(100), nullable=False)
     password=db.Column(db.String(200), nullable=False)
-    
+    user_name=db.Column(db.String(50), nullable=False)
 
-    def __init__ (self, user_id, password):
+    def __init__ (self, user_id, password, user_name):
         self.user_id=user_id
         self.password=password
+        self.user_name=user_name
     
 class Book (db.Model):
     __tablename__='book'
