@@ -9,8 +9,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
     user_id=db.Column(db.String(100), nullable=False)
     password=db.Column(db.String(200), nullable=False)
-    # reservation_num=db.Column(db.Integer, default=0, nullable=False)
-    # rented_num=db.Column(db.Integer, default=0, nullable=False)
+    
 
     def __init__ (self, user_id, password):
         self.user_id=user_id
@@ -35,8 +34,9 @@ class Comment (db.Model):
 
     id = db.Column(db.Integer, primary_key=True,              nullable=False, autoincrement=True)
 
-    author_id = db.Column(db.String(100), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     #foreign key 임 referencing user_id
+    book_id = db.Column(db.Integer, db.ForeignKey('book.id'), nullable=False)
 
     content = db.Column(db.Text(), nullable=False)
     time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
@@ -45,6 +45,17 @@ class Comment (db.Model):
 class Rented (db.Model):
     __tablename__='rented'
     id = db.Column(db.Integer, primary_key=True,              nullable=False, autoincrement=True)
-    title=db.Column(db.String(100), nullable=False)
+    user_id=db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    book_id=db.Column(db.Integer, db.ForeignKey('book.id'))
+    #isReturned=db.Column(db.Boolean, default=False)
+    rented_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    returned_time = db.Column(db.DateTime, nullable=True, default=None)
 
 
+class Reservation (db.Model):
+    __tablename__='reservation'
+    id = db.Column(db.Integer, primary_key=True,
+    nullable=False, autoincrement=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    book_id = db.Column(db.Integer, db.ForeignKey('book.id'))
+    isReserved= db.Column(db.Boolean, default=True)

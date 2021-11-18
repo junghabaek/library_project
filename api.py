@@ -5,6 +5,7 @@ from db_connect import db
 
 board = Blueprint('board', __name__)
 #bcrypt = Bcrypt()
+#url_prefix='/'
 
 @board.route("/", methods=['GET'])
 def home():
