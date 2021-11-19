@@ -74,7 +74,13 @@ def logout():
 
 @board.route('/mainpage', methods=['GET','POST'])
 def mainpage():
-    return render_template('mainpage.html')
+    #책 이미지
+    #책 제목
+    #books_title_asc=
+    books=Book.query.order_by(Book.title.asc())
+    #img = "../static/img/9.png"
+
+    return render_template('mainpage.html', cards=books)
 
 @board.route('/mypage', methods=['GET','POST'])
 def mypage():

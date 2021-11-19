@@ -9,7 +9,7 @@ app.register_blueprint(board)
 
 app.config['SQLALCHEMY_DATABASE_URI'] ="mysql+pymysql://root:614614@127.0.0.1:3306/library"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
-app.secret_key = "seeeeeeeeeeeecret"
+app.secret_key = "614614"
 app.config['SESSION_TYPE'] = 'filesystem'
 db.init_app(app)
 
