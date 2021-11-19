@@ -1,9 +1,10 @@
 from flask import url_for, redirect, request, render_template, jsonify, Blueprint, session, g
 from models import *
 from db_connect import db
-from flask_bcrypt import Bcrypt
+from werkzeug.security import check_password_hash, generate_password_hash
+#from flask_bcrypt import Bcrypt
 
-bcrypt = Bcrypt()
+# bcrypt = Bcrypt()
 board = Blueprint('board', __name__)
 
 #url_prefix='/'
@@ -19,41 +20,48 @@ def login():
         return redirect(url_for('board.home'))
     elif request.method=="POST":
         if request.form["password2"]:
-            id=request.form["email"]
+            id=request.form["email2"]
             name=request.form["name"]
-            pw=request.form["password"]
+            pw1=request.form["password1"]
             pw2 = request.form["password2"]
+            
+            if pw1!=pw2:
+                return '두 비밀번호가 틀립니다' #flash
+            else:
+                pw_hash=generate_password_hash(pw1)
+                user_data = User.query.filter(User.user_id == id).first()
 
-            #암호화 시킨후 저장
-            user_data = User.query.filter(User.user_id == id).first()
-
-            if user_data is not None:
-                return '이미 가입하셨습니다'
-
-            db.session.add(User(id,pw,name))
-            db.session.commit()
-            return '회원가입 성공'
+                if user_data is not None:
+                    return '이미 가입하셨습니다' #flash
+                else:
+                    db.session.add(User(id,pw_hash,name))
+                    db.session.commit()
+                    return redirect(url_for('board.login')) #flash
 
         else:
             id = request.form["email"]
             pw = request.form["password"]
-
+            
             user_data = User.query.filter(User.user_id==id).first()
             if not user_data:
                 return '없는 아이디 입니다'
-            elif pw!= user_data.password:
+            elif not check_password_hash(user_data.password, pw):
                 return '비밀번호가 틀렸습니다'
             else:
                 session.clear()
                 session['user_id']=id
                 session['name']=user_data.user_name
                 
-                return render_template('login.html')
+                return redirect(url_for('board.mainpage'))
 
 @board.route("/logout", methods=['POST','GET'])
 def logout():
     session.clear()
     return redirect(url_for('board.home'))
+
+@board.route('/mainpage', methods=['GET','POST'])
+def mainpage():
+    return render_template('main.html')
 
 
 

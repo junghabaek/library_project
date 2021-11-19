@@ -13,7 +13,7 @@ db_connection = pymysql.connect(
 con = db_connection
 cur = con.cursor(pymysql.cursors.DictCursor)
 
-with open('books.csv', 'r', 'utf-8') as datas:
+with open('book_list.csv', encoding='utf-8') as datas:
     records = csv.DictReader(datas)
     result = [(w['title'], w['publisher'], w['author'], w['publication_date'],
                w['pages'], str(w['isbn']), w['description'], w['link']) for w in records]
