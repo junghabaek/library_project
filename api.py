@@ -1,4 +1,5 @@
-from flask import url_for, redirect, request, render_template, jsonify, Blueprint, session, g
+from flask import url_for, redirect, request, render_template, jsonify, Blueprint, session, g, flash
+from flask.helpers import get_flashed_messages
 from models import *
 from db_connect import db
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -26,32 +27,44 @@ def login():
             pw2 = request.form["password2"]
             
             if pw1!=pw2:
-                return '두 비밀번호가 틀립니다' #flash
+                flash('비밀번호가 일치하지 않습니다.')
+
+                return redirect(url_for('board.home'))
             else:
                 pw_hash=generate_password_hash(pw1)
                 user_data = User.query.filter(User.user_id == id).first()
 
                 if user_data is not None:
-                    return '이미 가입하셨습니다' #flash
+                    flash('이미 가입된 이메일입니다.')
+                    return redirect(url_for('board.home'))
                 else:
                     db.session.add(User(id,pw_hash,name))
                     db.session.commit()
-                    return redirect(url_for('board.login')) #flash
-
+                    flash('환영합니다! 로그인 해 주세요.')
+                    return redirect(url_for('board.home'))#flash
+# flash()
+# {% for message in get_flashed_messages() %}
+# <div class='alert alert-info'>
+#     {{message}}
+# </div>
+# {% endfor %}
+        #로그인 구현
         else:
             id = request.form["email"]
             pw = request.form["password"]
             
             user_data = User.query.filter(User.user_id==id).first()
             if not user_data:
-                return '없는 아이디 입니다'
+                flash('없는 아이디 입니다. 가입을 해 주세요')
+                return redirect(url_for('board.home'))
             elif not check_password_hash(user_data.password, pw):
-                return '비밀번호가 틀렸습니다'
+                flash('비밀번호를 다시 확인해 주세요.')
+                return redirect(url_for('board.home'))
             else:
                 session.clear()
                 session['user_id']=id
                 session['name']=user_data.user_name
-                
+                flash('환영합니다!')
                 return redirect(url_for('board.mainpage'))
 
 @board.route("/logout", methods=['POST','GET'])
@@ -61,9 +74,11 @@ def logout():
 
 @board.route('/mainpage', methods=['GET','POST'])
 def mainpage():
-    return render_template('main.html')
+    return render_template('mainpage.html')
 
-
+@board.route('/mypage', methods=['GET','POST'])
+def mypage():
+    return render_template('mypage.html')
 
 
 # @board.route('/signup')
