@@ -87,6 +87,13 @@ def mypage():
     return render_template('mypage.html')
 
 
+@board.route('/details/<int:id>', methods=['GET', 'POST'])
+def details(id):
+    book=Book.query.filter(Book.id==id).first()
+    
+    return render_template('details.html', card=book)
+
+
 # @board.route('/signup')
 # def signup():
 
