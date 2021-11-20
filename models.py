@@ -46,9 +46,15 @@ class Comment (db.Model):
     book_id = db.Column(db.Integer, db.ForeignKey('book.id'), nullable=False)
 
     content = db.Column(db.Text(), nullable=False)
-    time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    time = db.Column(db.DateTime, nullable=False)
     rating = db.Column(db.Integer, nullable=False)
 
+    def __init__(self, user_id, book_id, content, rating, time):
+        self.user_id = user_id
+        self.book_id = book_id
+        self.content = content
+        self.rating = rating
+        self.time = time
 
 class Rented (db.Model):
     __tablename__ = 'rented'

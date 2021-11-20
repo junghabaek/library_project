@@ -1,4 +1,5 @@
 from flask import url_for, redirect, request, render_template, jsonify, Blueprint, session, g, flash
+from datetime import datetime
 from flask.helpers import get_flashed_messages
 from models import *
 from db_connect import db
@@ -89,9 +90,21 @@ def mypage():
 
 @board.route('/details/<int:id>', methods=['GET', 'POST'])
 def details(id):
-    book=Book.query.filter(Book.id==id).first()
-    
-    return render_template('details.html', card=book)
+
+    if request.method == 'GET':
+        book=Book.query.filter(Book.id==id).first()
+        return render_template('details.html', card=book)
+    else:
+        comment = request.form['comment']
+        rating=request.form['rating']
+        book = Book.query.filter(Book.id == id).first()
+        uid = User.query.filter(User.user_id == session['user_id']).first()
+        com = Comment(uid.id, id, comment, rating, datetime.utcnow())
+        db.session.add(com)
+        db.session.commit()
+        #flash('댓글이 작성되었습니다')
+        
+        return render_template('details.html', card=book)
 
 
 # @board.route('/signup')
