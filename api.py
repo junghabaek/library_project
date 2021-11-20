@@ -93,7 +93,18 @@ def details(id):
 
     if request.method == 'GET':
         book=Book.query.filter(Book.id==id).first()
-        return render_template('details.html', card=book)
+        comment_list = Comment.query.filter(Book.id == id).order_by(Comment.time.desc()).all()
+        avg=Comment.query.filter(Book.id==id).all()
+        cnt=0
+        sum=0
+        for i in avg:
+            sum+=i.rating
+            cnt+=1
+        average= round(sum/cnt,1)
+
+
+
+        return render_template('details.html', card=book, comment_list=comment_list, average=average)
     else:
         comment = request.form['comment']
         rating=request.form['rating']
@@ -102,9 +113,18 @@ def details(id):
         com = Comment(uid.id, id, comment, rating, datetime.utcnow())
         db.session.add(com)
         db.session.commit()
-        #flash('댓글이 작성되었습니다')
+        comment_list = Comment.query.filter(
+            Book.id == id).order_by(Comment.time.desc()).all()
+        avg = Comment.query.filter(Book.id == id).all()
+        cnt = 0
+        sum = 0
+        for i in avg:
+            sum += i.rating
+            cnt += 1
+        average = round(sum/cnt, 1)
+        flash('댓글이 작성되었습니다')
         
-        return render_template('details.html', card=book)
+        return render_template('details.html', card=book, comment_list=comment_list, average=average)
 
 
 # @board.route('/signup')
