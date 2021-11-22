@@ -80,7 +80,11 @@
                     </ul>
 
 
-                    <a href="/" class="btn btn-primary">Go somewhere</a>
+                    <form action="/details/{{card.id}}" method="post">
+                        <!-- <a href="/" class="btn btn-primary">대여하기/예약하기</a> -->
+                        <button class="btn btn-primary" name="button" value='1'>대여하기</button>
+                        <button class="btn btn-secondary" name="button" value='2'>예약하기</button>
+                    </form>
 
                     <div class="accordion" id="accordionExample" style="margin-top: 20px;">
                         <div class="accordion-item">
@@ -142,7 +146,7 @@
                 {% for comment in comment_list %}
                 <div class="card" style="display:inline-block;">
                     <div class="card-body">
-                        안녕하세요 {{ comment.content }}
+                        {{ comment.content }}
                     </div>
                 </div>
                 {% endfor %}

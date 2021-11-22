@@ -67,6 +67,13 @@ class Rented (db.Model):
                             default=datetime.utcnow)
     returned_time = db.Column(db.DateTime, nullable=True, default=None)
 
+    def __init__(self, user_id, book_id):
+        self.user_id = user_id
+        self.book_id = book_id
+        
+        
+        
+
 
 class Reservation (db.Model):
     __tablename__ = 'reservation'
@@ -75,3 +82,7 @@ class Reservation (db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     book_id = db.Column(db.Integer, db.ForeignKey('book.id'))
     isReserved = db.Column(db.Boolean, default=True)
+
+    def __init__(self, user_id, book_id):
+        self.user_id = user_id
+        self.book_id = book_id
