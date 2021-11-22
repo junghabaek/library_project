@@ -93,14 +93,17 @@ def details(id):
 
     if request.method == 'GET':
         book=Book.query.filter(Book.id==id).first()
-        comment_list = Comment.query.filter(Book.id == id).order_by(Comment.time.desc()).all()
-        avg=Comment.query.filter(Book.id==id).all()
+        comment_list = Comment.query.filter(Comment.book_id == id).order_by(Comment.time.desc()).all()
+        avg=Comment.query.filter(Comment.book_id==id).all()
         cnt=0
         sum=0
         for i in avg:
             sum+=i.rating
             cnt+=1
-        average= round(sum/cnt,1)
+        if cnt==0:
+            average=0
+        else:
+            average= round(sum/cnt,1)
 
 
 
@@ -114,14 +117,17 @@ def details(id):
         db.session.add(com)
         db.session.commit()
         comment_list = Comment.query.filter(
-            Book.id == id).order_by(Comment.time.desc()).all()
-        avg = Comment.query.filter(Book.id == id).all()
+            Comment.book_id == id).order_by(Comment.time.desc()).all()
+        avg = Comment.query.filter(Comment.book_id == id).all()
         cnt = 0
         sum = 0
         for i in avg:
             sum += i.rating
             cnt += 1
-        average = round(sum/cnt, 1)
+        if cnt == 0:
+            average = 0
+        else:
+            average = round(sum/cnt, 1)
         flash('댓글이 작성되었습니다')
         
         return render_template('details.html', card=book, comment_list=comment_list, average=average)
