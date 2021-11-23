@@ -246,7 +246,10 @@ def details(id):
 @board.route('/mypage', methods=['GET', 'POST'])
 def mypage():
     uid = User.query.filter(User.user_id == session['user_id']).first()
+    #borrowed_more_than_2 = Rented.query.filter(Rented.user_id == uid.id).filter(Rented.returned_time == None).all()
 
+    if len(Rented.query.filter(Rented.user_id==uid.id).filter(Rented.returned_time == None).all())>2:
+        flash("예약하신 책에 한에서는 한도가 넘어도 대여를 해 드리지만, 책을 3권 이상 빌렸으니 한권은 빨리 반납해 주세요.")
 ###책반납###
     
     if request.method=='POST':
@@ -261,8 +264,54 @@ def mypage():
             returned_book.returned_time = datetime.utcnow()
             updateStock=Book.query.filter(Book.id==returned_book_id).first()
             updateStock.stock+=1
-
             
+            if updateStock.stock==1:
+                updateReservation= Reservation.query.filter(Reservation.book_id==returned_book_id).filter(Reservation.isReserved==True).first()
+                if updateReservation is not None:
+                    updateUserId=updateReservation.user_id
+                    updateReservation.isReserved=False #예약 끝 => 대여하기
+                    
+                    #만약 빌린 책이 두권 이상이면? 예약을 못하게 하거나
+                    # 대여를 시켜주되 반납을 빨리 해달라는 메세지
+
+                    newRent=Rented(updateUserId, returned_book_id)
+                    db.session.add(newRent)
+                    updateStock.stock=0
+                    db.session.commit()
+                    
+                    return redirect(url_for('board.mypage'))
+
+##################                 
+                    
+# book = Book.query.filter(Book.id == id).first()
+#          uid = User.query.filter(User.user_id == session['user_id']).first()
+#           # 어떤 유저가 빌린 어떤 책인데, 반납하지 않은 책이 있으면 대여 안해줌.
+#           already_have = Rented.query.filter(Rented.book_id == id).filter(
+#                Rented.user_id == uid.id).filter(Rented.returned_time == None).first()
+
+#            if already_have is not None:
+#                 return '이미 대여중인 책입니다.'
+
+#             borrowed_more_than_2 = Rented.query.filter(
+#                 Rented.user_id == uid.id).filter(Rented.returned_time == None).all()
+#             if len(borrowed_more_than_2) == 2:
+#                 return '책은 한번에 두 권 까지만 빌릴 수 있어요.'
+
+#             if book.stock == 0:
+#                 return '재고가 없습니다.'
+#             else:
+#                 book.stock -= 1
+#                 # uid 받아와서, 대출에 레코드 추가
+
+#                 rented_record = Rented(uid.id, id)
+#                 db.session.add(rented_record)
+#                 db.session.commit()
+
+#############
+
+            #만약 stock이 1이증가해서 stock이 1이 됐으면,
+            # 예약자가 있는지 확인해 봅니다
+            # 예약자가 있으면 그 예약 
 
             db.session.commit()
             flash('책이 성공적으로 반납되었습니다.')
