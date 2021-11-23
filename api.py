@@ -246,38 +246,61 @@ def details(id):
 @board.route('/mypage', methods=['GET', 'POST'])
 def mypage():
     uid = User.query.filter(User.user_id == session['user_id']).first()
-    #rented_books_for_query=Rented.query.filter(Rented.user_id==uid.id).filter(Rented.returned_time==None).all()
-    book=Rented.query.filter(Rented.user_id==uid.id).filter(Rented.returned_time==None).all() # 유저가 빌려간 책들의 레코드
-    rented_books_list=[]
-    for i in book:
-        book_title=Book.query.filter(Book.id==i.book_id).first()
-        rented_books_list.append(book_title)
-    
-    reserved_book = Reservation.query.filter(Reservation.user_id == uid.id).filter(Reservation.isReserved == True).all()
-    reserved=[]
-    for i in reserved_book:
-        reserved_book_title=Book.query.filter(Book.id==i.book_id).first()
-        reserved.append(reserved_book_title)
-    
 
-    #reserved_books_line= Reservation.query.filter(Reservation.user_id==uid).filter(Reservation.isReserved== True).all()
-    #내가 예약한 책들의 레코드 최대 3권-> 각각의 레코드의 book_id로 책을 예약한 레코드 검색 최대 3권
-    #각각의 레코드의 갯수를 화면에 반환... 어떻게?
-
-    #numthree=len(Reservation.query.filter(Reservation.book_id==reserved_books_line).all())
-
-    reserved_num={}
+###책반납###
     
-    for i in reserved_book: #reserved_book은 내가 빌린 책 최대 2권
-        book = Reservation.query.filter(Reservation.book_id == i.book_id).filter(
-            Reservation.isReserved == True).filter(Reservation.id<i.id).all()  # 다른 사람들의 예약 레코드 리스트
-        reserved_num[i.book_id] = len(book)
-    
-    #book.id를 받아와야 하는데, reserved_book에서 book_id와 isReserved인 책을 검색한다.
-    # reserved_users = Reservation.query.filter(
-    #     Reservation.book_id == i.book_id).filter(Reservation.isReserved == True).all()
+    if request.method=='POST':
 
-    return render_template('mypage.html', cards=rented_books_list, reserved=reserved, num= len(rented_books_list), numtwo=len(reserved), reserved_num=reserved_num)
+        if request.form['button']:
+            returned_book_id = request.form['button']
+            returned_book = Rented.query.filter(Rented.user_id == uid.id).filter(
+                Rented.book_id == returned_book_id).filter(Rented.returned_time == None).first()
+            
+            returned_book.returned_time = datetime.utcnow()
+            updateStock=Book.query.filter(Book.id==returned_book_id).first()
+            updateStock.stock+=1
+            db.session.commit()
+            flash('책이 성공적으로 반납되었습니다.')
+            return redirect(url_for('board.mypage'))
+    
+    else:
+
+        #rented_books_for_query=Rented.query.filter(Rented.user_id==uid.id).filter(Rented.returned_time==None).all()
+        book=Rented.query.filter(Rented.user_id==uid.id).filter(Rented.returned_time==None).all() # 유저가 빌려간 책들의 레코드
+        rented_books_list=[]
+        for i in book:
+            book_title=Book.query.filter(Book.id==i.book_id).first()
+            rented_books_list.append(book_title)
+        
+        reserved_book = Reservation.query.filter(Reservation.user_id == uid.id).filter(Reservation.isReserved == True).all()
+        reserved=[]
+        for i in reserved_book:
+            reserved_book_title=Book.query.filter(Book.id==i.book_id).first()
+            reserved.append(reserved_book_title)
+        
+
+        #reserved_books_line= Reservation.query.filter(Reservation.user_id==uid).filter(Reservation.isReserved== True).all()
+        #내가 예약한 책들의 레코드 최대 3권-> 각각의 레코드의 book_id로 책을 예약한 레코드 검색 최대 3권
+        #각각의 레코드의 갯수를 화면에 반환... 어떻게?
+
+        #numthree=len(Reservation.query.filter(Reservation.book_id==reserved_books_line).all())
+
+        reserved_num={}
+        
+        for i in reserved_book: #reserved_book은 내가 빌린 책 최대 2권
+            book = Reservation.query.filter(Reservation.book_id == i.book_id).filter(
+                Reservation.isReserved == True).filter(Reservation.id<i.id).all()  # 다른 사람들의 예약 레코드 리스트
+            reserved_num[i.book_id] = len(book)
+        
+        #book.id를 받아와야 하는데, reserved_book에서 book_id와 isReserved인 책을 검색한다.
+        # reserved_users = Reservation.query.filter(
+        #     Reservation.book_id == i.book_id).filter(Reservation.isReserved == True).all()
+
+        
+
+
+
+        return render_template('mypage.html', cards=rented_books_list, reserved=reserved, num= len(rented_books_list), numtwo=len(reserved), reserved_num=reserved_num)
 
 # @board.route('/signup')
 # def signup():

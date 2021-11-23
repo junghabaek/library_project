@@ -45,8 +45,15 @@
         </nav>
 
 <div style="height:100px"></div>
+{% for message in get_flashed_messages() %}
+<div class='alert alert-info'>
+    {{message}}
+</div>
+{% endfor %}
+<form action="/mypage" method="post">
 <div class='row'>
     <h2>대여중인 책은 {{num}}권 입니다.</h1>
+    
     {% for card in cards %}
     <div class='col-md-3' style="margin-bottom: 50px;">
         <div class="card" style="width: 18rem; height:500px">
@@ -56,14 +63,16 @@
 
                 <h5 class="card-title">{{card.title}}</h5>
                 
-                <a href="/" class="btn btn-primary">반납하기</a>
+                <button class="btn btn-primary" name='button' value={{card.id}}>반납하기</button>
             </div>
         </div>
     </div>
 
     {% endfor %}
+    
 
 </div>
+</form>
 
 <div class='row'>
     <h2>예약하신 책은 {{numtwo}}권 입니다.</h1>
