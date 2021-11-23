@@ -74,6 +74,7 @@
 </div>
 </form>
 
+<form action="/mypage" method="post">
 <div class='row'>
     <h2>예약하신 책은 {{numtwo}}권 입니다.</h1>
         {% for book in reserved %}
@@ -89,7 +90,7 @@
                     {% else %}
                     <p> 앞에 {{ reserved_num[book.id] }} 명이 대기하고 있습니다. </p>
                     {% endif %}
-                    <a href="/" class="btn btn-primary">예약 취소</a>
+                    <button class="btn btn-primary" name='button' value={{book.id}}>예약취소</button>
                 </div>
             </div>
         </div>
@@ -97,7 +98,7 @@
         {% endfor %}
 
 </div>
-        
+</form>
         </div>
         </div>
         </nav>

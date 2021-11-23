@@ -86,3 +86,8 @@ class Reservation (db.Model):
     def __init__(self, user_id, book_id):
         self.user_id = user_id
         self.book_id = book_id
+
+        #두잇 리액트 예약을 취소하면
+        #앞에 1명이 대기하는것으로 바꿔야함
+        #북아이디는 7번
+        #유저 12번 아이디로 취소해보자

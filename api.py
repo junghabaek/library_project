@@ -250,18 +250,34 @@ def mypage():
 ###책반납###
     
     if request.method=='POST':
+        # button2를 눌렀을 때 button이 안눌렸기에, request.form['button'] 자체가 없다
+        
 
-        if request.form['button']:
-            returned_book_id = request.form['button']
-            returned_book = Rented.query.filter(Rented.user_id == uid.id).filter(
-                Rented.book_id == returned_book_id).filter(Rented.returned_time == None).first()
-            
+        returned_book_id = request.form['button']
+        returned_book = Rented.query.filter(Rented.user_id == uid.id).filter(
+                    Rented.book_id == returned_book_id).filter(Rented.returned_time == None).first()
+        
+        if returned_book is not None:
             returned_book.returned_time = datetime.utcnow()
             updateStock=Book.query.filter(Book.id==returned_book_id).first()
             updateStock.stock+=1
+
+            
+
             db.session.commit()
             flash('책이 성공적으로 반납되었습니다.')
             return redirect(url_for('board.mypage'))
+        
+        
+        cancellation_id=request.form['button']
+        cancelled_book=Reservation.query.filter(Reservation.user_id==uid.id).filter(Reservation.book_id==cancellation_id).filter(Reservation.isReserved==True).first()
+
+        if cancelled_book is not None:
+            cancelled_book.isReserved = False
+            db.session.commit()
+            flash('도서 예약이 취소되었습니다.')
+            return redirect(url_for('board.mypage'))
+
     
     else:
 
