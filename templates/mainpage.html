@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -38,62 +37,63 @@
                             <a class="nav-link" href="/logout">로그아웃</a>
                         </li>
 
-                        
+
                     </ul>
-                    
+
                 </div>
             </div>
         </nav>
-<div style="height:100px"></div>
-<div class='row'>
-        {% for card in cards %}
-        <div class='col-md-3' style="margin-bottom: 50px;">
-        <div class="card" style="width: 18rem; height:500px">
-            <a href="/details/{{card.id}}"><img src="{{card.img_url}}" class="card-img-top" alt="{{card.title}}" style="width:100%; height:300px"></a>
-            <div class="card-body">
-                
-                <h5 class="card-title">{{card.title}}</h5>
-                <p class="card-text">재고: {{card.stock}}</p>
-                <a href="/" class="btn btn-primary">Go somewhere</a>
+        <div style="height:100px"></div>
+        <div class='row'>
+            {% for card in cards %}
+            <div class='col-md-3' style="margin-bottom: 50px;">
+                <div class="card" style="width: 18rem; height:500px">
+                    <a href="/details/{{card.id}}"><img src="{{card.img_url}}" class="card-img-top" alt="{{card.title}}"
+                            style="width:100%; height:300px"></a>
+                    <div class="card-body">
+
+                        <h5 class="card-title">{{card.title}}</h5>
+                        <p class="card-text">재고: {{card.stock}}</p>
+                        <a href="/details/{{card.id}}" class="btn btn-primary">도서 상세 페이지</a>
+                    </div>
+                </div>
             </div>
-        </div>
-        </div>
-        
 
-        {% endfor %}
 
-</div>
+            {% endfor %}
+
+        </div>
         <!-- {% for card in cards %} -->
 
         <!-- {% endfor %} -->
 
 
 
-        
-                        
-                            
-<!--         
+
+
+
+        <!--         
                     <p>안녕하세요, {{session['name']}}님! 환영합니다!</p> -->
-                    <!-- <div class='alert alert-info' style="width:auto; height:20%">
+        <!-- <div class='alert alert-info' style="width:auto; height:20%">
                         
                         <p>안녕하세요, {{session['name']}}님! 환영합니다!</p>
                     </div> -->
 
-                </div>
-            </div>
+        </div>
+        </div>
         </nav>
     </main>
 
 
 
-    
-    
-    
+
+
+
 
 
 
 </body>
-        
+
 <!--         
         
         {% if session['user_id'] %}
@@ -103,13 +103,13 @@
         {% endif %} -->
 
 
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
-            crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+    crossorigin="anonymous"></script>
 
-        <script>
-            
-        </script>
+<script>
+
+</script>
 
 
 

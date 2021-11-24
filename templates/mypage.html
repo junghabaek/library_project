@@ -44,61 +44,99 @@
             </div>
         </nav>
 
-<div style="height:100px"></div>
-{% for message in get_flashed_messages() %}
-<div class='alert alert-info'>
-    {{message}}
-</div>
-{% endfor %}
-<form action="/mypage" method="post">
-<div class='row'>
-    <h2>대여중인 책은 {{num}}권 입니다.</h1>
-    
-    {% for card in cards %}
-    <div class='col-md-3' style="margin-bottom: 50px;">
-        <div class="card" style="width: 18rem; height:500px">
-            <a href="/details/{{card.id}}"><img src="{{card.img_url}}" class="card-img-top" alt="{{card.title}}"
-                    style="width:100%; height:300px"></a>
-            <div class="card-body">
-
-                <h5 class="card-title">{{card.title}}</h5>
-                
-                <button class="btn btn-primary" name='button' value={{card.id}}>반납하기</button>
-            </div>
+        <div style="height:100px"></div>
+        {% for message in get_flashed_messages() %}
+        <div class='alert alert-info'>
+            {{message}}
         </div>
-    </div>
+        {% endfor %}
+        <form action="/mypage" method="post">
+            <div class='row'>
+                <h2>대여중인 책은 {{num}}권 입니다.</h2>
 
-    {% endfor %}
-    
+                {% for card in cards %}
+                <div class='col-md-3' style="margin-bottom: 50px;">
+                    <div class="card" style="width: 18rem; height:500px">
+                        <a href="/details/{{card.id}}"><img src="{{card.img_url}}" class="card-img-top"
+                                alt="{{card.title}}" style="width:100%; height:300px"></a>
+                        <div class="card-body">
 
-</div>
-</form>
+                            <h5 class="card-title">{{card.title}}</h5>
 
-<form action="/mypage" method="post">
-<div class='row'>
-    <h2>예약하신 책은 {{numtwo}}권 입니다.</h1>
-        {% for book in reserved %}
-        <div class='col-md-3' style="margin-bottom: 50px;">
-            <div class="card" style="width: 18rem; height:500px">
-                <a href="/details/{{book.id}}"><img src="{{book.img_url}}" class="card-img-top" alt="{{book.title}}"
-                        style="width:100%; height:300px"></a>
-                <div class="card-body">
+                            <button class="btn btn-primary" name='button' value={{card.id}}>반납하기</button>
+                        </div>
+                    </div>
+                </div>
 
-                    <h5 class="card-title">{{book.title}}</h5>
-                    {% if reserved_num[book.id]==0%}
-                    <p>한권만 더 반납이 되면 책이 자동으로 빌려집니다</p>
-                    {% else %}
-                    <p> 앞에 {{ reserved_num[book.id] }} 명이 대기하고 있습니다. </p>
-                    {% endif %}
-                    <button class="btn btn-primary" name='button' value={{book.id}}>예약취소</button>
+                {% endfor %}
+
+
+            </div>
+        </form>
+
+        <form action="/mypage" method="post">
+            <div class='row'>
+                <h2>예약하신 책은 {{numtwo}}권 입니다.</h2>
+                {% for book in reserved %}
+                <div class='col-md-3' style="margin-bottom: 50px;">
+                    <div class="card" style="width: 18rem; height:500px">
+                        <a href="/details/{{book.id}}"><img src="{{book.img_url}}" class="card-img-top"
+                                alt="{{book.title}}" style="width:100%; height:300px"></a>
+                        <div class="card-body">
+
+                            <h5 class="card-title">{{book.title}}</h5>
+                            {% if reserved_num[book.id]==0%}
+                            <p>한권만 더 반납이 되면 책이 자동으로 빌려집니다</p>
+                            {% else %}
+                            <p> 앞에 {{ reserved_num[book.id] }} 명이 대기하고 있습니다. </p>
+                            {% endif %}
+                            <button class="btn btn-primary" name='button' value={{book.id}}>예약취소</button>
+                        </div>
+                    </div>
+                </div>
+
+                {% endfor %}
+
+            </div>
+        </form>
+
+        <div class='row'>
+            <h2>반납하신 책들은 {{numfo}}권 입니다.</h2>
+            {% for book in rented_books_list_for_returned %}
+            {% for returned in returned_list %}
+            <!-- #리턴한 책의 리스트 반환...해서 book.id와 returned.book_id가 같으면
+        문장 전체를 출력
+        #returned_list에는 Rented. bookid와 rented.uid, rented.returnedtime false로 검색해서 -->
+            <!-- <p> {{book.id}} ,,, {{returned.book_id}}</p> -->
+            {% if book.id==returned.book_id %}
+            <div class='col-md-3' style="margin-bottom: 50px;">
+                <div class="card" style="width: 18rem; height:500px">
+                    <a href="/details/{{book.id}}"><img src="{{book.img_url}}" class="card-img-top" alt="{{book.title}}"
+                            style="width:100%; height:300px"></a>
+                    <div class="card-body">
+
+                        <h5 class="card-title">{{book.title}} </h5>
+                        <p>대여일:
+                            {{returned.rented_time.year}}-{{returned.rented_time.month}}-{{returned.rented_time.day}}
+                        </p>
+                        <p>반납일:
+                            {{returned.returned_time.year}}-{{returned.returned_time.month}}-{{returned.returned_time.day}}
+                        </p>
+
+
+                    </div>
+
                 </div>
             </div>
+            {% endif %}
+
+
+            {% endfor %}
+            {% endfor %}
+
+
         </div>
 
-        {% endfor %}
-
-</div>
-</form>
         </div>
         </div>
         </nav>
@@ -128,7 +166,7 @@
     crossorigin="anonymous"></script>
 
 <script>
-    
+
 </script>
 
 
