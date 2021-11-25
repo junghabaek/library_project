@@ -28,6 +28,7 @@ def login():
             name = request.form["name"]
             pw1 = request.form["password1"]
             pw2 = request.form["password2"]
+            
 
             if pw1 != pw2:
                 flash('비밀번호가 일치하지 않습니다.')
@@ -74,6 +75,7 @@ def login():
 @board.route("/logout", methods=['POST', 'GET'])
 def logout():
     session.clear()
+    flash('정상적으로 로그아웃 되셨습니다.')
     return redirect(url_for('board.home'))
 
 
@@ -120,15 +122,18 @@ def details(id):
                 Rented.user_id == uid.id).filter(Rented.returned_time == None).first()
 
             if already_have is not None:
-                return '이미 대여중인 책입니다.'
+                flash('이미 대여중인 책입니다.')
+                return redirect(url_for('board.details', id=id))
 
             borrowed_more_than_2 = Rented.query.filter(
                 Rented.user_id == uid.id).filter(Rented.returned_time == None).all()
             if len(borrowed_more_than_2) == 2:
-                return '책은 한번에 두 권 까지만 빌릴 수 있어요.'
+                flash('책은 한번에 두 권 까지만 빌릴 수 있어요.')
+                return redirect(url_for('board.details', id=id))
 
             if book.stock == 0:
-                return '재고가 없습니다.'
+                flash('재고가 없습니다.')
+                return redirect(url_for('board.details', id=id))
             else:
                 book.stock -= 1
                 # uid 받아와서, 대출에 레코드 추가
@@ -149,7 +154,7 @@ def details(id):
                     average = 0
                 else:
                     average = round(sum/cnt, 1)
-
+                flash('행복한 시간 되세요~!')
                 return render_template('details.html', card=book, comment_list=comment_list, average=average)
 
         elif request.form["button"] == '2':
@@ -159,7 +164,9 @@ def details(id):
             # uid 받아와서, 예약에 레코드 추가, 단 한 사람은 세 권 까지만 예약을 할 수 있고, 한 책에는 네 명 이상 예약 불가능
             # 책이 아직 남아있을 때는 그냥 대여하기로 안내하기
             if book.stock != 0:
-                return '아직 재고가 남아있습니다. 대여를 해 보세요'
+                flash('아직 재고가 남아있습니다. 대여를 해 보세요')
+                return redirect(url_for('board.details', id=id))
+                
 
             uid = User.query.filter(User.user_id == session['user_id']).first()
 
@@ -167,31 +174,37 @@ def details(id):
                 Rented.user_id == uid.id).filter(Rented.returned_time == None).first()
 
             if already_have is not None:
-                return '이미 대여중인 책엔 예약을 할 수 없어요.'
+
+                flash('이미 대여중인 책엔 예약을 할 수 없어요.')
+                return redirect(url_for('board.details', id=id))
 
             already_reserved = Reservation.query.filter(Reservation.book_id == id).filter(
                 Reservation.user_id == uid.id).filter(Reservation.isReserved == True).first()
 
             if already_reserved is not None:
-                return '이미 예약을 걸어놓은 책입니다.'
+                flash('이미 예약을 걸어놓은 책입니다.')
+                return redirect(url_for('board.details', id=id))
 
             already_have = Rented.query.filter(Rented.book_id == id).filter(
                 Rented.user_id == uid.id).filter(Rented.returned_time == None).first()
 
             if already_have is not None:
-                return '이미 대여중인 책입니다.'
+                flash('이미 대여중인 책입니다.')
+                return redirect(url_for('board.details', id=id))
 
             isReserverMoreThanThree = Reservation.query.filter(
                 Reservation.book_id == id).filter(Reservation.isReserved == True).all()
 
             if len(isReserverMoreThanThree) == 3:
-                return '예약은 세 명 까지만 할 수 있어요.'
+                flash( '예약은 세 명 까지만 할 수 있어요.')
+                return redirect(url_for('board.details', id=id))
 
             hasUserReservedMoreThanThree = Reservation.query.filter(
                 Reservation.user_id == uid.id).filter(Reservation.isReserved == True).all()
 
             if len(hasUserReservedMoreThanThree) == 3:
-                return '예약은 세 권 까지만 할 수 있어요'
+                flash('예약은 세 권 까지만 할 수 있어요')
+                return redirect(url_for('board.details', id=id))
 
             reservation = Reservation(uid.id, id)
 
@@ -267,7 +280,7 @@ def mypage():
                     updateUserId = updateReservation.user_id
                     updateReservation.isReserved = False  # 예약 끝 => 대여하기
 
-                    #만약 빌린 책이 두권 이상이면? 예약을 못하게 하거나
+                    # 만약 빌린 책이 두권 이상이면? 예약을 못하게 하거나
                     # 대여를 시켜주되 반납을 빨리 해달라는 메세지
 
                     newRent = Rented(updateUserId, returned_book_id)
@@ -305,7 +318,7 @@ def mypage():
 
 #############
 
-            #만약 stock이 1이증가해서 stock이 1이 됐으면,
+            # 만약 stock이 1이증가해서 stock이 1이 됐으면,
             # 예약자가 있는지 확인해 봅니다
             # 예약자가 있으면 그 예약
 
@@ -325,7 +338,7 @@ def mypage():
 
     else:
 
-        #rented_books_for_query=Rented.query.filter(Rented.user_id==uid.id).filter(Rented.returned_time==None).all()
+        # rented_books_for_query=Rented.query.filter(Rented.user_id==uid.id).filter(Rented.returned_time==None).all()
         book = Rented.query.filter(Rented.user_id == uid.id).filter(
             Rented.returned_time == None).all()  # 유저가 빌려간 책들의 레코드
         rented_books_list = []
@@ -343,10 +356,10 @@ def mypage():
             reserved.append(reserved_book_title)
 
         #reserved_books_line= Reservation.query.filter(Reservation.user_id==uid).filter(Reservation.isReserved== True).all()
-        #내가 예약한 책들의 레코드 최대 3권-> 각각의 레코드의 book_id로 책을 예약한 레코드 검색 최대 3권
-        #각각의 레코드의 갯수를 화면에 반환... 어떻게?
+        # 내가 예약한 책들의 레코드 최대 3권-> 각각의 레코드의 book_id로 책을 예약한 레코드 검색 최대 3권
+        # 각각의 레코드의 갯수를 화면에 반환... 어떻게?
 
-        #numthree=len(Reservation.query.filter(Reservation.book_id==reserved_books_line).all())
+        # numthree=len(Reservation.query.filter(Reservation.book_id==reserved_books_line).all())
 
         reserved_num = {}
 
@@ -355,28 +368,33 @@ def mypage():
                 Reservation.isReserved == True).filter(Reservation.id < i.id).all()  # 다른 사람들의 예약 레코드 리스트
             reserved_num[i.book_id] = len(book)
 
-        #book.id를 받아와야 하는데, reserved_book에서 book_id와 isReserved인 책을 검색한다.
+        # book.id를 받아와야 하는데, reserved_book에서 book_id와 isReserved인 책을 검색한다.
         # reserved_users = Reservation.query.filter(
         #     Reservation.book_id == i.book_id).filter(Reservation.isReserved == True).all()
 
         book_returned = Rented.query.filter(Rented.user_id == uid.id).filter(
             Rented.returned_time != None).all()
         # 유저가 반납한 책들의 레코드
-        #반납한 책의 book_id를 가져와서 책의 이미지와 타이틀을 가져와야함
-        #rented 레코드를 프론트로 보내야함
+        # 반납한 책의 book_id를 가져와서 책의 이미지와 타이틀을 가져와야함
+        # rented 레코드를 프론트로 보내야함
         rented_books_list_for_returned = []
         for i in book_returned:
             returned_returned = Book.query.filter(Book.id == i.book_id).first()
             rented_books_list_for_returned.append(returned_returned)
 
-        numfo = len(rented_books_list_for_returned)
+        rented_books_list_for_returned= list(set(rented_books_list_for_returned))        
+        numfo = len(book_returned)
 
-        returned_list = []
-        for i in book_returned:
-            book_returned_bookid = Rented.query.filter(Rented.user_id == uid.id).filter(
-                Rented.returned_time != None).filter(Rented.book_id == i.book_id).first()
-            #빌려간 책들중에 한 유저가 빌렸다가 반납한 certain 책의 레코드들을 list로 저장
-            returned_list.append(book_returned_bookid)
+
+
+        returned_list = Rented.query.filter(Rented.user_id == uid.id).filter(
+            Rented.returned_time != None).order_by(Rented.id.asc()).all()
+
+        # for i in book_returned:
+        #     book_returned_bookid = Rented.query.filter(Rented.user_id == uid.id).filter(
+        #         Rented.returned_time != None).filter(Rented.book_id == i.book_id).first()
+        #     # 빌려간 책들중에 한 유저가 빌렸다가 반납한 certain 책의 레코드들을 list로 저장
+        #     returned_list.append(book_returned_bookid)
 
         return render_template('mypage.html', cards=rented_books_list, reserved=reserved, num=len(rented_books_list), numtwo=len(reserved), numfo=numfo,
                                reserved_num=reserved_num, returned_list=returned_list, rented_books_list_for_returned=rented_books_list_for_returned)
