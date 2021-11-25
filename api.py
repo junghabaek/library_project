@@ -110,10 +110,11 @@ def details(id):
 
         return render_template('details.html', card=book, comment_list=comment_list, average=average, uid=uid.id)
     else:
+        
         # borrow = request.form["borrow"]
         # reserve = request.form["reserve"]
         # button이 안눌렸으니까 request.form['button']이 없다
-        if request.form['button'] == '1':
+        if request.form.get('borrow') is not None:
             # stock 하나 줄이기 book_id를 받아와서 query 해서 book 찾고, 그 book의 stock을 바꾼다.
             book = Book.query.filter(Book.id == id).first()
 
@@ -157,7 +158,7 @@ def details(id):
                 flash('행복한 시간 되세요~!')
                 return render_template('details.html', card=book, comment_list=comment_list, average=average, uid=uid.id)
 
-        elif request.form["button"] == '2':
+        elif request.form.get("reserve") is not None:
 
             # 한사람당 두 권 까지 예약 가능
             book = Book.query.filter(Book.id == id).first()
@@ -225,8 +226,8 @@ def details(id):
 
         
 
-        el:
-            comment = request.form['button']
+        elif request.form.get('comment') is not None:
+            comment = request.form['comment']
             rating = request.form['rating']
             book = Book.query.filter(Book.id == id).first()
 
@@ -249,18 +250,23 @@ def details(id):
 
             return render_template('details.html', card=book, comment_list=comment_list, average=average, uid=uid.id)
         
-        if request.form["button"] == 'update':
-            comment_id = request.form['comment_id']
+        
+        if request.form.get("update") is not None:
+            comment_id = request.form['update']
             # comment의 id를 프론트에서 받아온다음 백에서 update하고, redirect
             comment = Comment.query.filter(Comment.id == comment_id).first()
-            comment.content = request.form['button']
+            comment.content = request.form['updatecomment']
             db.session.commit()
-            redirect(url_for('board.details'))
+            return redirect(url_for('board.details', id=id))
 
-        elif request.form["button"] == 'delete':
-            pass
+        if request.form.get("delete") is not None:
+            comment_id = request.form['delete']
+            comment = Comment.query.filter(Comment.id == comment_id).first()
+            db.session.delete(comment)
+            db.session.commit()
+            return redirect(url_for('board.details', id=id))
 
-        #button으로 값을 받는게 아니고 input으로 받아야 하는것 같다.
+
 
 
 @board.route('/mypage', methods=['GET', 'POST'])

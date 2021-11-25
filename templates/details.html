@@ -84,8 +84,8 @@
 
                         <form action="/details/{{card.id}}" method="post">
                             <!-- <a href="/" class="btn btn-primary">대여하기/예약하기</a> -->
-                            <button class="btn btn-primary" name="button" value='1'>대여하기</button>
-                            <button class="btn btn-secondary" name="button" value='2'>예약하기</button>
+                            <input class="btn btn-primary" type='submit' name="borrow" value='대여하기'>
+                            <input class="btn btn-secondary" type= 'submit' name="reserve" value='예약하기'>
                         </form>
 
                         <div class="accordion" id="accordionExample" style="margin-top: 20px;">
@@ -128,7 +128,7 @@
                                         <form accept-charset="UTF-8" action="/details/{{card.id}}" method="post">
                                             <input id="ratings-hidden" name="rating" type="hidden">
                                             <textarea class="form-control animated" cols="50" id="new-review"
-                                                name="button" placeholder="Enter your review here..." rows="3" style="-webkit-transition: height 0.2s;
+                                                name="comment" placeholder="Enter your review here..." rows="3" style="-webkit-transition: height 0.2s;
                                             -moz-transition: height 0.2s;
                                             transition: height 0.2s;"></textarea>
 
@@ -151,15 +151,17 @@
                                     <div class="card-body">
 
                                         {{ comment.content }}
-                                        {{comment.user_id}}
+                                        
                                         {% if comment.user_id == uid %}
                                         <form accept-charset="UTF-8" action="/details/{{card.id}}" method="post">
-                                            <textarea class="form-control animated" cols="50" id="new-review" name="button" placeholder="Update your comment..."
+                                            <textarea class="form-control animated" cols="50" id="new-review" name="updatecomment" placeholder="Update your comment..."
                                                 rows="3" style="-webkit-transition: height 0.2s;
                                                                                         -moz-transition: height 0.2s;
                                                                                         transition: height 0.2s;"></textarea>
-                                            <button class="btn btn-success btn-sm" name='button' type="submit" value='update'>수정</button> <input type='submit' value={{comment.id}}>
-                                            <button class="btn btn-success btn-sm" name='button' type="submit" value='delete'>삭제</button>
+                                            <button class="btn btn-success btn-sm" name='update' type="submit" value={{comment.id}}>수정하기</button>
+                                            <button class="btn btn-warning btn-sm" name='delete' type="submit" value={{comment.id}}>삭제하기</button>
+                                            
+                                            
                                         </form>
                                         {% endif %}
                                     </div>
