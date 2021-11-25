@@ -68,7 +68,11 @@
 
                         <h5 class="card-title">{{card.title}}</h5>
                         <ul style="text-align:inherit;">
+                            {% if average ==0 %}
+                            <li>아직 등록된 평점이 없습니다. </li>
+                            {% else %}
                             <li>평점 : {{average}} </li>
+                            {% endif %}
                             <li>저자 : {{card.author}}</li>
                             <li>페이지: {{card.pages}}쪽</li>
                             <li>출판사: {{card.publisher}}</li>
