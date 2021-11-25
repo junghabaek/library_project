@@ -28,7 +28,6 @@ def login():
             name = request.form["name"]
             pw1 = request.form["password1"]
             pw2 = request.form["password2"]
-            
 
             if pw1 != pw2:
                 flash('비밀번호가 일치하지 않습니다.')
@@ -92,8 +91,9 @@ def mainpage():
 
 @board.route('/details/<int:id>', methods=['GET', 'POST'])
 def details(id):
-
+    uid = User.query.filter(User.user_id == session['user_id']).first()
     if request.method == 'GET':
+
         book = Book.query.filter(Book.id == id).first()
         comment_list = Comment.query.filter(
             Comment.book_id == id).order_by(Comment.time.desc()).all()
@@ -108,7 +108,7 @@ def details(id):
         else:
             average = round(sum/cnt, 1)
 
-        return render_template('details.html', card=book, comment_list=comment_list, average=average)
+        return render_template('details.html', card=book, comment_list=comment_list, average=average, uid=uid.id)
     else:
         # borrow = request.form["borrow"]
         # reserve = request.form["reserve"]
@@ -116,7 +116,7 @@ def details(id):
         if request.form['button'] == '1':
             # stock 하나 줄이기 book_id를 받아와서 query 해서 book 찾고, 그 book의 stock을 바꾼다.
             book = Book.query.filter(Book.id == id).first()
-            uid = User.query.filter(User.user_id == session['user_id']).first()
+
             # 어떤 유저가 빌린 어떤 책인데, 반납하지 않은 책이 있으면 대여 안해줌.
             already_have = Rented.query.filter(Rented.book_id == id).filter(
                 Rented.user_id == uid.id).filter(Rented.returned_time == None).first()
@@ -155,7 +155,7 @@ def details(id):
                 else:
                     average = round(sum/cnt, 1)
                 flash('행복한 시간 되세요~!')
-                return render_template('details.html', card=book, comment_list=comment_list, average=average)
+                return render_template('details.html', card=book, comment_list=comment_list, average=average, uid=uid.id)
 
         elif request.form["button"] == '2':
 
@@ -166,9 +166,6 @@ def details(id):
             if book.stock != 0:
                 flash('아직 재고가 남아있습니다. 대여를 해 보세요')
                 return redirect(url_for('board.details', id=id))
-                
-
-            uid = User.query.filter(User.user_id == session['user_id']).first()
 
             already_have = Rented.query.filter(Rented.book_id == id).filter(
                 Rented.user_id == uid.id).filter(Rented.returned_time == None).first()
@@ -196,7 +193,7 @@ def details(id):
                 Reservation.book_id == id).filter(Reservation.isReserved == True).all()
 
             if len(isReserverMoreThanThree) == 3:
-                flash( '예약은 세 명 까지만 할 수 있어요.')
+                flash('예약은 세 명 까지만 할 수 있어요.')
                 return redirect(url_for('board.details', id=id))
 
             hasUserReservedMoreThanThree = Reservation.query.filter(
@@ -224,13 +221,15 @@ def details(id):
             else:
                 average = round(sum/cnt, 1)
 
-            return render_template('details.html', card=book, comment_list=comment_list, average=average)
+            return render_template('details.html', card=book, comment_list=comment_list, average=average, uid=uid.id)
 
-        else:
+        
+
+        el:
             comment = request.form['button']
             rating = request.form['rating']
             book = Book.query.filter(Book.id == id).first()
-            uid = User.query.filter(User.user_id == session['user_id']).first()
+
             com = Comment(uid.id, id, comment, rating, datetime.utcnow())
             db.session.add(com)
             db.session.commit()
@@ -248,7 +247,20 @@ def details(id):
                 average = round(sum/cnt, 1)
             flash('댓글이 작성되었습니다')
 
-            return render_template('details.html', card=book, comment_list=comment_list, average=average)
+            return render_template('details.html', card=book, comment_list=comment_list, average=average, uid=uid.id)
+        
+        if request.form["button"] == 'update':
+            comment_id = request.form['comment_id']
+            # comment의 id를 프론트에서 받아온다음 백에서 update하고, redirect
+            comment = Comment.query.filter(Comment.id == comment_id).first()
+            comment.content = request.form['button']
+            db.session.commit()
+            redirect(url_for('board.details'))
+
+        elif request.form["button"] == 'delete':
+            pass
+
+        #button으로 값을 받는게 아니고 input으로 받아야 하는것 같다.
 
 
 @board.route('/mypage', methods=['GET', 'POST'])
@@ -382,10 +394,9 @@ def mypage():
             returned_returned = Book.query.filter(Book.id == i.book_id).first()
             rented_books_list_for_returned.append(returned_returned)
 
-        rented_books_list_for_returned= list(set(rented_books_list_for_returned))        
+        rented_books_list_for_returned = list(
+            set(rented_books_list_for_returned))
         numfo = len(book_returned)
-
-
 
         returned_list = Rented.query.filter(Rented.user_id == uid.id).filter(
             Rented.returned_time != None).order_by(Rented.id.asc()).all()

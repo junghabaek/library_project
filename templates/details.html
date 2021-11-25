@@ -128,7 +128,7 @@
                                         <form accept-charset="UTF-8" action="/details/{{card.id}}" method="post">
                                             <input id="ratings-hidden" name="rating" type="hidden">
                                             <textarea class="form-control animated" cols="50" id="new-review"
-                                                name="button" placeholder="Enter your review here..." rows="5" style="-webkit-transition: height 0.2s;
+                                                name="button" placeholder="Enter your review here..." rows="3" style="-webkit-transition: height 0.2s;
                                             -moz-transition: height 0.2s;
                                             transition: height 0.2s;"></textarea>
 
@@ -149,7 +149,19 @@
                                 {% for comment in comment_list %}
                                 <div class="card" style="display:flex; flex-direction: row; margin-bottom: 10px;">
                                     <div class="card-body">
+
                                         {{ comment.content }}
+                                        {{comment.user_id}}
+                                        {% if comment.user_id == uid %}
+                                        <form accept-charset="UTF-8" action="/details/{{card.id}}" method="post">
+                                            <textarea class="form-control animated" cols="50" id="new-review" name="button" placeholder="Update your comment..."
+                                                rows="3" style="-webkit-transition: height 0.2s;
+                                                                                        -moz-transition: height 0.2s;
+                                                                                        transition: height 0.2s;"></textarea>
+                                            <button class="btn btn-success btn-sm" name='button' type="submit" value='update'>수정</button> <input type='submit' value={{comment.id}}>
+                                            <button class="btn btn-success btn-sm" name='button' type="submit" value='delete'>삭제</button>
+                                        </form>
+                                        {% endif %}
                                     </div>
                                 </div>
                                 {% endfor %}
