@@ -1,4 +1,3 @@
-import pymysql
 from flask import Flask
 from api import board
 from db_connect import db
