@@ -222,6 +222,7 @@ def details(id):
             else:
                 average = round(sum/cnt, 1)
 
+            flash('즐거운 기다림이 되시길 바래요~!')
             return render_template('details.html', card=book, comment_list=comment_list, average=average, uid=uid.id)
 
         
