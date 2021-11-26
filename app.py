@@ -1,3 +1,4 @@
+import pymysql
 from flask import Flask
 from api import board
 from db_connect import db
@@ -18,4 +19,5 @@ Migrate().init_app(app, db)
 
 
 if __name__ =='__main__':
-    app.run('0.0.0.0', port=80 , debug=True )
+    
+    app.run('0.0.0.0', port=80 , debug=True)
