@@ -7,7 +7,7 @@ from flask_migrate import Migrate
 app= Flask(__name__)
 app.register_blueprint(board)
 
-app.config['SQLALCHEMY_DATABASE_URI'] ="mysql+pymysql://root:614614@127.0.0.1:3306/library"
+app.config['SQLALCHEMY_DATABASE_URI'] ="mysql+pymysql://root:614614@127.0.0.1:3306/library?charset=utf8mb4"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
 app.secret_key = "614614"
 app.config['SESSION_TYPE'] = 'filesystem'
