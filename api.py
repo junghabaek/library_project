@@ -229,28 +229,40 @@ def details(id):
         
 
         elif request.form.get('comment') is not None:
-            comment = request.form['comment']
-            rating = request.form['rating']
-            book = Book.query.filter(Book.id == id).first()
+            
+            if request.form.get('comment') == '':
+                flash('댓글을 작성해 주세요')
+                return redirect(url_for('board.details', id=id))
 
-            com = Comment(uid.id, id, comment, rating, datetime.utcnow())
-            db.session.add(com)
-            db.session.commit()
-            comment_list = Comment.query.filter(
-                Comment.book_id == id).order_by(Comment.time.desc()).all()
-            avg = Comment.query.filter(Comment.book_id == id).all()
-            cnt = 0
-            sum = 0
-            for i in avg:
-                sum += i.rating
-                cnt += 1
-            if cnt == 0:
-                average = 0
+            elif request.form.get('rating') =='':
+                flash('별점은 필수로 입력하셔야 합니다.')
+                return redirect(url_for('board.details', id=id))
+
+            
+
             else:
-                average = round(sum/cnt, 1)
-            flash('댓글이 작성되었습니다')
+                comment = request.form['comment']
+                rating = request.form['rating']
+                book = Book.query.filter(Book.id == id).first()
 
-            return render_template('details.html', card=book, comment_list=comment_list, average=average, uid=uid.id)
+                com = Comment(uid.id, id, comment, rating, datetime.utcnow())
+                db.session.add(com)
+                db.session.commit()
+                comment_list = Comment.query.filter(
+                    Comment.book_id == id).order_by(Comment.time.desc()).all()
+                avg = Comment.query.filter(Comment.book_id == id).all()
+                cnt = 0
+                sum = 0
+                for i in avg:
+                    sum += i.rating
+                    cnt += 1
+                if cnt == 0:
+                    average = 0
+                else:
+                    average = round(sum/cnt, 1)
+                flash('댓글이 작성되었습니다')
+
+                return render_template('details.html', card=book, comment_list=comment_list, average=average, uid=uid.id)
         
         
         if request.form.get("update") is not None:
